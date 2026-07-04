@@ -1,0 +1,6 @@
+{
+  "name": "Hanif & Nurin Wedding Invitation",
+  "description": "An ultra-premium, interactive, and luxury cinematic digital wedding invitation for Hanif Hidayatullah and Nurin Fildza Azzahra.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
