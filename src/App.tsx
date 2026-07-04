@@ -3,7 +3,7 @@ import { Heart, Calendar, Users, Camera, Gift, MapPin, Menu, X, Volume2, Home, S
 import { motion, AnimatePresence } from 'motion/react';
 import OpeningCover from './components/OpeningCover';
 import CinematicIntro from './components/CinematicIntro';
-import AudioPlayer from './components/AudioPlayer';
+import AudioPlayer, { getGlobalAudio, fadeGlobalAudio } from './components/AudioPlayer';
 import SurahArRum from './components/SurahArRum';
 import EventSection from './components/EventSection';
 import LoveStoryTimeline from './components/LoveStoryTimeline';
@@ -73,8 +73,22 @@ export default function App() {
   }, [experiencePhase]);
 
   const handleOpenInvitation = () => {
-    // Proceed to cinematic 15 second intro
+    // 1. Play background music immediately on user gesture/click to bypass all mobile/desktop autoplay bans
+    const audio = getGlobalAudio();
+    if (audio) {
+      audio.play()
+        .then(() => {
+          // Immediately fade in smoothly to 30% volume over 1.5 seconds
+          fadeGlobalAudio(0.3, 1500);
+        })
+        .catch((err) => {
+          console.warn('Audio play request failed or deferred:', err);
+        });
+    }
+
+    // 2. Set states: enter intro view & turn on playing state
     setExperiencePhase('intro');
+    setAudioPlaying(true);
   };
 
   const handleIntroComplete = () => {
@@ -95,6 +109,9 @@ export default function App() {
   return (
     <div className="min-h-screen bg-cream-soft select-none font-poppins relative text-charcoal overflow-x-hidden">
       
+      {/* Background Ambient Romantic Audio Stream */}
+      <AudioPlayer isPlaying={audioPlaying} setIsPlaying={setAudioPlaying} experiencePhase={experiencePhase} />
+
       {/* 1. Opening Cover */}
       {experiencePhase === 'cover' && (
         <OpeningCover onOpen={handleOpenInvitation} guestName={guestName} />
@@ -204,8 +221,7 @@ export default function App() {
             )}
           </AnimatePresence>
 
-          {/* Background Ambient Romantic Audio Stream */}
-          <AudioPlayer isPlaying={audioPlaying} setIsPlaying={setAudioPlaying} />          {/* ====================================
+          {/* ====================================
               HOME / HERO SECTION
               ==================================== */}
           <section
